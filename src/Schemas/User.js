@@ -12,13 +12,14 @@ const userSchema = new mongoose.Schema({
         index: true 
     },
     status: { type: String, default: 'offline' },
-    description: String,
+    description: {type: String, default: 'Hello! Im New'},
     passWord: String,
     phoneNum: String,
     pendingReceivedFriendRequests: [{type: mongoose.Schema.Types.ObjectId, ref: "FriendRequest"}],
     pendingSentFriendRequests: [{type: mongoose.Schema.Types.ObjectId, ref: "FriendRequest"}],
     joinedGcs: [{type: mongoose.Schema.Types.ObjectId, ref: 'GroupChat'}],
-    relations: [{type: mongoose.Schema.Types.ObjectId, ref: 'Relation'}]
+    relations: [{type: mongoose.Schema.Types.ObjectId, ref: 'Relation'}],
+    creationDate: {type: Date, default: Date.now}
 });
 
 const User = mongoose.model('User', userSchema);

@@ -9,8 +9,22 @@ export default function initAuthWsCb(ws){
         const userName = data.userName;
         const passWord = data.passWord;
     
-        const user = await User.findOne().where({userName: userName}).populate('relations')
-            .populate('pendingReceivedFriendRequests').populate('pendingSentFriendRequests')
+        const user = await User.findOne().where({userName: userName}).populate({
+            path: 'relations',
+            populate: [{path: 'first'}, {path: 'second'}]
+        })
+                .populate([{
+                    path: 'pendingSentFriendRequests',
+                    populate:{
+                        path: 'receiverUser'
+                    }
+                },
+                {
+                    path: 'pendingReceivedFriendRequests',
+                    populate:{
+                        path: 'senderUser'
+                    }
+                }])
             .populate('joinedGcs');
         
         if(!user){
