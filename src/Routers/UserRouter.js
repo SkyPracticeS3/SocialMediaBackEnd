@@ -18,7 +18,6 @@ userRouter.get('/:name', async (req, res) => {
         res.json({exists : false});
         return;
     }
-    delete user._id;
     delete user.passWord;
     res.json(user);
 });

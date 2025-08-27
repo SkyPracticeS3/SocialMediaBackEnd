@@ -25,16 +25,17 @@ export default function initAuthWsCb(ws){
                         path: 'senderUser'
                     }
                 }])
-            .populate('joinedGcs');
+            .populate('joinedGcs').exec();
         
         if(!user){
             ws.emit('error', { msg: 'No Such UserName Was Found' });
+            console.log('err')
             ws.disconnect(true);
             return;
         }
 
-        const exists = await bcrypt.compare(passWord, user.passWord);
-        console.log(exists);
+        const exists = bcrypt.compareSync(passWord, user.passWord);
+        
         if(exists){
             user.status = 'online';
             await user.save();
@@ -42,8 +43,8 @@ export default function initAuthWsCb(ws){
             delete sentUser.passWord;
             delete sentUser._id;
             ws.emit('userInfo', sentUser);
-            ws.data = user;
-            userIdToSocketIdMap.set(user._id, ws.id);
+            ws.data = user.toObject();
+            userIdToSocketIdMap.set(user._id.toString(), ws.id);
             return;
         }
         ws.emit('error', {msg: 'Incorrect Password'});

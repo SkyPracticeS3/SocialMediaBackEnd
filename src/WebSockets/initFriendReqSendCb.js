@@ -12,7 +12,7 @@ export default function initFriendReqSendCb(ws, server){
         const targetUser = await User.findOne().where('userName').equals(data.userName)
             .populate('pendingReceivedFriendRequests').populate('relations').exec();
         /** @type {User}*/
-        const senderUser = ws.data;
+        const senderUser = await User.findById(ws.data._id);
 
         if(targetUser.pendingReceivedFriendRequests.some(e => e.senderUser._id == senderUser._id) ||
             senderUser.pendingReceivedFriendRequests.some(e => e.senderUser._id == targetUser._id)){
@@ -34,6 +34,6 @@ export default function initFriendReqSendCb(ws, server){
         let sentSenderUser = structuredClone(senderUser.toObject());
         delete sentSenderUser.passWord;
         delete sentSenderUser._id;
-        server.to(userIdToSocketIdMap.get(targetUser._id)).emit('friendRequestReceived', {sender: sentSenderUser});
+        server.to(userIdToSocketIdMap.get(targetUser._id.toString())).emit('friendRequestReceived', {sender: sentSenderUser});
     });
 }   
