@@ -6,6 +6,7 @@ import initFriendReqSendCb from './initFriendReqSendCb.js';
 import userIdToSocketIdMap from './userIdToSocketMap.js';
 import { relation } from '../Schemas/Relation.js';
 import initFriendReqAcceptCb from './initFriendReqAcceptCb.js';
+import initUnFriendCb from './initUnFriendCb.js';
 
 /***
  * @param {io.Server} server
@@ -16,6 +17,7 @@ export default function initWsServer(server) {
         initAuthWsCb(ws);
         initFriendReqSendCb(ws, server);
         initFriendReqAcceptCb(ws, server);
+        initUnFriendCb(ws, server);
 
         ws.on('declineFriendRequest', async data => {
             if(ws.data == null){
@@ -72,9 +74,9 @@ export default function initWsServer(server) {
             ws.data = receiver.toObject();
     
             
-            const sentSender = structuredClone(senderModel.toObject());
-            delete sentSender.passWord;
-            server.to(userIdToSocketIdMap.get(receiver._id.toString())).emit('friendRequestDeclined', {sender: sentSender})    
+            const sentReceiver = structuredClone(receiver.toObject());
+            delete sentReceiver.passWord;
+            server.to(userIdToSocketIdMap.get(senderModel._id.toString())).emit('friendRequestDeclined', {decliner: sentReceiver})    
         });
         ws.on('disconnect', async reason => {
             if(ws.data._id){

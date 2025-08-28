@@ -12,7 +12,7 @@ export default function initFriendReqSendCb(ws, server){
         const targetUser = await User.findOne().where('userName').equals(data.userName)
             .populate('pendingReceivedFriendRequests').populate('relations').exec();
         /** @type {User}*/
-        const senderUser = await User.findById(ws.data._id);
+        const senderUser = await User.findOne().where('userName').equals(ws.data.userName);
 
         if(targetUser.pendingReceivedFriendRequests.some(e => e.senderUser._id == senderUser._id) ||
             senderUser.pendingReceivedFriendRequests.some(e => e.senderUser._id == targetUser._id)){

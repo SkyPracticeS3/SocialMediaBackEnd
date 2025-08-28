@@ -13,6 +13,7 @@ import {Server} from 'socket.io'
 import http from 'http';
 import initWsServer from "./WebSockets/initWsServer.js";
 import cors from 'cors';
+import {dm} from './Schemas/Dm.js'
 
 const dirName = dirname(fileURLToPath(import.meta.url));
 
