@@ -14,6 +14,7 @@ import http from 'http';
 import initWsServer from "./WebSockets/initWsServer.js";
 import cors from 'cors';
 import {dm} from './Schemas/Dm.js'
+import DmRouter from './Routers/DmRouter.js'
 
 const dirName = dirname(fileURLToPath(import.meta.url));
 
@@ -35,6 +36,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 app.use('/users', userRouter);
+app.use('/dms', DmRouter);
 app.get('/', (req, res) => {
     res.send('Welcome to the server! WebSocket server is running.');
 });

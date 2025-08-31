@@ -7,6 +7,8 @@ import userIdToSocketIdMap from './userIdToSocketMap.js';
 import { relation } from '../Schemas/Relation.js';
 import initFriendReqAcceptCb from './initFriendReqAcceptCb.js';
 import initUnFriendCb from './initUnFriendCb.js';
+import initOpenDmCb from './initOpenDmCb.js';
+import initDmMessageCb from './initDmMessageCb.js';
 
 /***
  * @param {io.Server} server
@@ -18,6 +20,8 @@ export default function initWsServer(server) {
         initFriendReqSendCb(ws, server);
         initFriendReqAcceptCb(ws, server);
         initUnFriendCb(ws, server);
+        initOpenDmCb(ws, server);
+        initDmMessageCb(ws ,server)
 
         ws.on('declineFriendRequest', async data => {
             if(ws.data == null){

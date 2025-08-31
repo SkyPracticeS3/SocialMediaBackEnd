@@ -11,8 +11,7 @@ const userRouter = Router();
 
 userRouter.get('/:name', async (req, res) => {
     const userName = req.params.name;
-    const user = await User.findOne().where('userName').equals(userName).populate('relations').
-        populate('joinedServers').lean().exec();
+    const user = await User.findOne().where('userName').equals(userName).populate('relations').lean().exec();
 
     if(!user){
         res.json({exists : false});

@@ -9,10 +9,15 @@ const dmSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    messages: {
+    uuid: {
+        type: String,
+        default: () => crypto.randomUUID(),
+        unique: true
+    },
+    messages: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'DmMessage'
-    }
+    }]
 });
 
 export const dm = mongoose.model('Dm', dmSchema);

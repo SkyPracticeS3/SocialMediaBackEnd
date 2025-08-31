@@ -19,7 +19,8 @@ const userSchema = new mongoose.Schema({
     pendingSentFriendRequests: [{type: mongoose.Schema.Types.ObjectId, ref: "FriendRequest"}],
     joinedGcs: [{type: mongoose.Schema.Types.ObjectId, ref: 'GroupChat'}],
     relations: [{type: mongoose.Schema.Types.ObjectId, ref: 'Relation'}],
-    creationDate: {type: Date, default: Date.now}
+    creationDate: {type: Date, default: Date.now},
+    openedDms: [{type: mongoose.Schema.Types.ObjectId, ref: 'Dm'}]
 });
 
 const User = mongoose.model('User', userSchema);
