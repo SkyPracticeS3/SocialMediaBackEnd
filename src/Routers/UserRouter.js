@@ -70,7 +70,6 @@ userRouter.post('/register', fileUploader.single('pfp'), async(req, res) => {
     const phoneNum = req.body.phoneNum;
     const status = 'offline';
     const pfpName = userName;
-    console.log(email, userName, displayName, passWord, phoneNum, status, pfpName);
 
     const exists = await User.exists().where({userName: userName});
 

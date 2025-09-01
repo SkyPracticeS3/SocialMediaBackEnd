@@ -5,6 +5,7 @@ const dmMessageSchema = new mongoose.Schema({
     receiverUser: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     content: String,
     readByReceiver: { type: Boolean, default: false },
+    uuid: {type:String, default: () => crypto.randomUUID()},
     sentAt: {
         type: Date,
         default: Date.now

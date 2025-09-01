@@ -1,7 +1,14 @@
+import { Server, Socket } from "socket.io";
 import { dm } from "../Schemas/Dm.js";
 import User from "../Schemas/User.js";
 import userIdToSocketIdMap from "./userIdToSocketMap.js";
 
+/**
+ * @description Initializes The Open Dm CallBack For The Server
+ * @param {Socket} ws;
+ * @param {Server} server
+ * @returns {void}
+*/
 export default function initOpenDmCb(ws, server){
     ws.on('openDm', async other => {
         if(!ws.data){
@@ -21,19 +28,24 @@ export default function initOpenDmCb(ws, server){
 
         if(dbSocketUser.openedDms.some(e => e.first.userName == dbSocketUser.userName ? e.second.userName ==
             otherUser.userName : e.first.userName == otherUser.userName)) {
+
+            const newDm = dbSocketUser.openedDms.find(e => e.first.userName == dbSocketUser.userName ? e.second.userName ==
+                otherUser.userName : e.first.userName == otherUser.userName);
+            ws.emit('dmOpenedByYou', {user: otherUser, dmUUID: newDm.uuid});
             return;
         };
 
         const newDm = await dm.create({first: dbSocketUser._id, second: dbOtherUser._id, messages: []});
         
-        dbSocketUser.openedDms.push(newDm._id);
-        dbOtherUser.openedDms.push(newDm._id);
+        dbSocketUser.openedDms = [newDm._id, ...dbSocketUser.openedDms];
+        dbOtherUser.openedDms = [newDm._id, ...dbOtherUser.openedDms];
 
         await dbSocketUser.save();
         await dbOtherUser.save();
 
         delete dbSocketUser.passWord;
 
-        server.to(userIdToSocketIdMap.get(dbOtherUser._id.toString())).emit('dmOpened', {user: dbSocketUser});
+        ws.emit('dmOpenedByYou', {user: otherUser, dmUUID: newDm.uuid});
+        server.to(userIdToSocketIdMap.get(dbOtherUser._id.toString())).emit('dmOpened', {user: dbSocketUser, dmUUID: newDm.uuid});
     });
 }

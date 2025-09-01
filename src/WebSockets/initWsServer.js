@@ -53,8 +53,6 @@ export default function initWsServer(server) {
                     }])
                 .populate('joinedGcs').exec();
     
-            console.log(receiver)
-            console.log(senderModel)
             const sentReqIndex = senderModel.pendingSentFriendRequests.findIndex(e => receiver._id.equals(e.receiverUser._id));
     
             if(sentReqIndex == -1){

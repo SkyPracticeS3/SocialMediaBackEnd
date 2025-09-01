@@ -13,7 +13,7 @@ export default function initDmMessageCb(ws, server){
 
         const dbSocketUser = await User.findOne().where('userName').equals(socketUser.userName);
         const dbOtherUser = await User.findOne().where('userName').equals(otherUser.userName);
-        console.log(openDm);
+
         const dbOpenDm = await dm.findOne().where('uuid').equals(openDm._id);
 
         const DmMessage = await dmMessage.create({senderUser: dbSocketUser._id,

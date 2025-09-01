@@ -31,8 +31,6 @@ DmRouter.get('/:first/:second/msgs', async (req, res) => {
         return;
     }
     delete secondUser.passWord;
-    console.log(firstUser);
-    console.log(secondUser);
 
     const openDm = await dm.findOne({
   first: { $in: [firstUser._id, secondUser._id] },
