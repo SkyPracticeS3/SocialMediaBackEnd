@@ -31,23 +31,21 @@ export default function initAuthWsCb(ws){
                         path: 'senderUser'
                     }
                 }])
-            .populate('joinedGcs').populate({path: 'openedDms', populate:[{path: 'first'}, {path: 'second'}]}).exec();
-        
+            .populate({path: 'openedDms', populate:[{path: 'first'}, {path: 'second'}]}).exec();
         if(!user){
             ws.emit('error', { msg: 'No Such UserName Was Found' });
             console.log('err')
             ws.disconnect(true);
             return;
         }
-
+        delete user.passWord;
         const exists = bcrypt.compareSync(passWord, user.passWord);
         
         if(exists){
             user.status = 'online';
             await user.save();
-            const sentUser = structuredClone(user.toObject());
-            delete sentUser.passWord;
-            
+            const sentUser = user.toObject();
+
             sentUser.openedDms = sentUser.openedDms.map(e => { return ({first: e.first, second: e.second, _id: e.uuid})});
             ws.emit('userInfo', (sentUser));
             ws.data = user.toObject();

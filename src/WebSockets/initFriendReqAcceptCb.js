@@ -33,7 +33,7 @@ export default function initFriendReqAcceptCb(ws, server) {
                         path: 'receiverUser'
                     }
                 }])
-            .populate('joinedGcs').exec();
+            .exec();
 
         const sentReqIndex = senderModel.pendingSentFriendRequests.findIndex(e => receiver._id.equals(e.receiverUser._id));
 

@@ -9,6 +9,8 @@ import initFriendReqAcceptCb from './initFriendReqAcceptCb.js';
 import initUnFriendCb from './initUnFriendCb.js';
 import initOpenDmCb from './initOpenDmCb.js';
 import initDmMessageCb from './initDmMessageCb.js';
+import initDeleteDmMessageCb from './initDeleteDmMessageCb.js';
+import initEditDmMessageCb from './initEditDmMessageCb.js';
 
 /***
  * @param {io.Server} server
@@ -16,12 +18,15 @@ import initDmMessageCb from './initDmMessageCb.js';
 export default function initWsServer(server) {
     server.on('connection', ws => {
         console.log('someone tried connecting');
+        
         initAuthWsCb(ws);
         initFriendReqSendCb(ws, server);
         initFriendReqAcceptCb(ws, server);
         initUnFriendCb(ws, server);
         initOpenDmCb(ws, server);
-        initDmMessageCb(ws ,server)
+        initDmMessageCb(ws, server);
+        initDeleteDmMessageCb(ws, server);
+        initEditDmMessageCb(ws, server);
 
         ws.on('declineFriendRequest', async data => {
             if(ws.data == null){
@@ -50,8 +55,7 @@ export default function initWsServer(server) {
                             path: 'senderUser',
                             path: 'receiverUser'
                         }
-                    }])
-                .populate('joinedGcs').exec();
+                    }]).exec();
     
             const sentReqIndex = senderModel.pendingSentFriendRequests.findIndex(e => receiver._id.equals(e.receiverUser._id));
     
@@ -76,8 +80,7 @@ export default function initWsServer(server) {
             ws.data = receiver.toObject();
     
             
-            const sentReceiver = structuredClone(receiver.toObject());
-            delete sentReceiver.passWord;
+            const sentReceiver = (receiver.toObject());
             server.to(userIdToSocketIdMap.get(senderModel._id.toString())).emit('friendRequestDeclined', {decliner: sentReceiver})    
         });
         ws.on('disconnect', async reason => {

@@ -11,20 +11,14 @@ export default function initDmMessageCb(ws, server){
         const text = data.content;
         const openDm = data.dm;
 
-        const dbSocketUser = await User.findOne().where('userName').equals(socketUser.userName);
-        const dbOtherUser = await User.findOne().where('userName').equals(otherUser.userName);
+        const DmMessage = await dmMessage.create({senderUser: socketUser._id,
+            receiverUser: otherUser._id, content: text});
 
-        const dbOpenDm = await dm.findOne().where('uuid').equals(openDm._id);
-
-        const DmMessage = await dmMessage.create({senderUser: dbSocketUser._id,
-            receiverUser: dbOtherUser._id, content: text});
-        dbOpenDm.messages.push(DmMessage._id);
-
-        await dbOpenDm.save();
-
-        
-        server.to(userIdToSocketIdMap.get(dbOtherUser._id.toString())).emit('dmMessageSent', {senderUser: dbSocketUser.userName,
-            dm: dbOpenDm, content: text
+        ws.emit('dmMessageSent', {senderUser: socketUser.userName,
+            dm: {_id: openDm._id}, content: text, uuid: DmMessage.uuid
+        });
+        server.to(userIdToSocketIdMap.get(otherUser._id.toString())).emit('dmMessageSent', {senderUser: socketUser.userName,
+            dm: {_id: openDm._id}, content: text, uuid: DmMessage.uuid
         });
     });
 

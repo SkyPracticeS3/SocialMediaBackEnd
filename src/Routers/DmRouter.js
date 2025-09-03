@@ -2,6 +2,7 @@ import { Router } from "express"
 import User from "../Schemas/User.js";
 import {fileURLToPath} from 'url';
 import path, { dirname } from "path";
+import { dmMessage } from "../Schemas/DmMessage.js";
 import fs from 'fs';
 import bcrypt from 'bcrypt';
 import { fileUploader } from "../Storage/fileStorage.js";
@@ -16,7 +17,8 @@ const DmRouter = Router();
 DmRouter.get('/:first/:second/msgs', async (req, res) => {
     const firstName = req.params.first;
     const secondName = req.params.second;
-    const limit = req.query.limit;
+    const limit = Number(req.query.limit);
+    const skipAmount = Number(req.query.skip != null ? req.query.skip : '0');
 
     const firstUser = await User.findOne().where('userName').equals(firstName).lean();
     if(!firstUser) {
@@ -32,23 +34,22 @@ DmRouter.get('/:first/:second/msgs', async (req, res) => {
     }
     delete secondUser.passWord;
 
-    const openDm = await dm.findOne({
-  first: { $in: [firstUser._id, secondUser._id] },
-  second: { $in: [firstUser._id, secondUser._id] }
-}).populate('messages').lean();
-    openDm.messages = openDm.messages.map(e => {
+    let msgs = await dmMessage.find({senderUser: { $in: [firstUser._id, secondUser._id] },
+  receiverUser: { $in: [firstUser._id, secondUser._id] }}).sort({sentAt: -1}).skip(skipAmount).limit(limit).lean();
+    msgs.reverse();
+    msgs = msgs.map(e => {
         if(e.senderUser.equals(firstUser._id)){
             return {senderUser: firstUser.userName, sentAt: e.sentAt,
-                readByReceiver: e.readByReceiver, content: e.content
+                readByReceiver: e.readByReceiver, content: e.content, uuid: e.uuid
             };
         }
 
         return {senderUser: secondUser.userName, sentAt: e.sentAt,
-                readByReceiver: e.readByReceiver, content: e.content
+                readByReceiver: e.readByReceiver, content: e.content, uuid: e.uuid
             };
     })
     
-    res.json(openDm.messages);
+    res.json(msgs);
 });
 
 

@@ -35,7 +35,7 @@ export default function initOpenDmCb(ws, server){
             return;
         };
 
-        const newDm = await dm.create({first: dbSocketUser._id, second: dbOtherUser._id, messages: []});
+        const newDm = await dm.create({first: dbSocketUser._id, second: dbOtherUser._id});
         
         dbSocketUser.openedDms = [newDm._id, ...dbSocketUser.openedDms];
         dbOtherUser.openedDms = [newDm._id, ...dbOtherUser.openedDms];

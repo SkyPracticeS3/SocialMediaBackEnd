@@ -3,11 +3,11 @@ import mongoose from "mongoose";
 const relationSchema = new mongoose.Schema({
     first: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User', index: true
     },
     second: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User', index: true
     },
     relation: {
         type: String,
